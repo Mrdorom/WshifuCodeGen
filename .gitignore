@@ -1,0 +1,35 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+logs/
+venv/
+gen_work_space/*
+
+out/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+*.idea
+.mvn/
+*.cmd
+target/
+idea/
+mvnw
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
