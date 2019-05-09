@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.wanshifu</groupId>
+        <artifactId>wshifu-microservice-parent</artifactId>
+        <version>{{ microservice_parent_version }}</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.wanshifu</groupId>
+    <artifactId>{{ app_name }}</artifactId>
+    <packaging>war</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <!--<modules>-->
+    <!--<module>common</module>-->
+    <!--</modules>-->
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <wanshfiu-framework-version>{{ framework_version }}</wanshfiu-framework-version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.wanshifu</groupId>
+            <artifactId>wshifu-microservice-cloud-fegin-component</artifactId>
+            <version>2.2.Jacoco-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wanshifu</groupId>
+            <artifactId>wshifu-framework-web-api-core-spring-boot-starter</artifactId>
+            <version>${wanshfiu-framework-version}</version>
+        </dependency>
+        {%- if with_database %}
+        <dependency>
+            <groupId>com.wanshifu</groupId>
+            <artifactId>wshifu-framework-persistence-spring-boot-starter</artifactId>
+            <version>${wanshfiu-framework-version}</version>
+        </dependency>
+        {%-  endif -%}
+        {%- if with_mq %}
+        <dependency>
+            <groupId>com.wanshifu</groupId>
+            <artifactId>wshifu-framework-rocketmq-spring-boot-starter</artifactId>
+            <version>${wanshfiu-framework-version}</version>
+        </dependency>
+        {%-  endif -%}
+        {%- if with_redis %}
+        <dependency>
+            <groupId>com.wanshifu</groupId>
+            <artifactId>wshifu-framework-redis-spring-boot-starter</artifactId>
+            <version>${wanshfiu-framework-version}</version>
+        </dependency>
+        {%  endif -%}
+        <dependency>
+            <groupId>com.wanshifu</groupId>
+            <artifactId>wshifu-framework-test</artifactId>
+            <version>${wanshfiu-framework-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!--H2-->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!--多环境部署配置-->
+    <profiles>
+        <profile>
+            <id>test</id>
+            <properties>
+                <deploy.env>test</deploy.env>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <deploy.env>prod</deploy.env>
+            </properties>
+        </profile>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <deploy.env>dev</deploy.env>
+            </properties>
+        </profile>
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <deploy.env>local</deploy.env>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <filters>
+            <filter>src/main/resources/config/application-${deploy.env}.properties</filter>
+        </filters>
+        <resources>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warName>{{ app_name }}</warName>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
