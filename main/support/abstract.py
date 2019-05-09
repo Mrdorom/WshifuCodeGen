@@ -10,16 +10,16 @@ from main.utis.utils import Configuration
 from main.utis.utils import FileDesc
 
 
-class Handler(metaclass=ABCMeta):
+class FileMaker(metaclass=ABCMeta):
 
     @abstractmethod
-    def hand(self, context):
+    def make(self, context):
         pass
 
 
-class AbstractBaseEachTableHandler(Handler, metaclass=ABCMeta):
+class AbstractBaseEachTableFileMaker(FileMaker, metaclass=ABCMeta):
 
-    def hand(self, context):
+    def make(self, context):
         assert isinstance(context, AbstractDbApplicationContext)
         tm = self.get_template()
         for table in context.get_tables():
@@ -114,6 +114,10 @@ class Context(metaclass=ABCMeta):
     def get_file_descs(self):
         pass
 
+    @abstractmethod
+    def custom_context(self, key, c=None):
+        pass
+
 
 class Delivery(metaclass=ABCMeta):
 
@@ -192,6 +196,7 @@ class AbstractApplicationContext(Context, metaclass=ABCMeta):
         self.make_work_path()
         self.make_dir_frame()
         self.post_init(config)
+        self.__custom_context_space = {}
 
     def post_init(self, config):
         pass
@@ -267,6 +272,11 @@ class AbstractApplicationContext(Context, metaclass=ABCMeta):
 
     def get_file_descs(self):
         return self.__file_descs
+
+    def custom_context(self, key, c=None):
+        if c:
+            self.__custom_context_space[key] = c
+        return self.__custom_context_space[key]
 
 
 class PathHolder(metaclass=ABCMeta):

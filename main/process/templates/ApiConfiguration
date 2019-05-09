@@ -1,0 +1,44 @@
+package {{base_package}};
+
+import org.springframework.cloud.bootstrap.config.PropertySourceLocator;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
+
+import java.util.Collections;
+
+@Configuration
+public class {{app_class_name}}ApiConfiguration implements PropertySourceLocator {
+
+    @Override
+    public PropertySource<?> locate(Environment environment) {
+        String url;
+        String[] environments = environment.getActiveProfiles();
+        String hostPrefix;
+        if (environments.length > 0) {
+            switch (environments[0]) {
+                case "test":
+                    hostPrefix = "test-";
+                    break;
+                case "prod":
+                    hostPrefix = "";
+                    break;
+                case "dev":
+                    hostPrefix = "dev-";
+                    break;
+                case "local":
+                    hostPrefix = "dev-";
+                    break;
+                default:
+                    hostPrefix = "dev-";
+
+            }
+            url = "http://" + hostPrefix + "{{project_host}}";
+        } else {
+            throw new IllegalArgumentException("environment error! active profiles is empty");
+        }
+        return new MapPropertySource("{{app_name}}-property",
+                Collections.singletonMap("wanshifu.{{app_name}}.url", url));
+    }
+}
